@@ -9,6 +9,7 @@
   --color-text-primary: #f4f4f5;
   --color-text-secondary: #A1A1AA;
   --color-logo: #ffffff;
+  --colot-text-dark:var(--color-bg-primary)
 
   --radius-DEFAULT: 16px;
 }

@@ -14,12 +14,17 @@
   --radius-DEFAULT: 16px;
 }
 
-.rounded-default {
+.rounded-primary {
   @apply rounded-2xl;
 }@import "tailwindcss";
 
+.rounded-secondary {
+  @apply rounded-lg;
+}@import "tailwindcss";
+
+
 @layer base {
   body {
-    @apply bg-bg-primary text-text-primary;
+    @apply bg-bg-primary;
   }
 }

@@ -2,10 +2,24 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Star, Check, Plus, Loader2, SearchX, TrendingUp, Search } from "lucide-react";
+import {
+  Star,
+  Check,
+  Plus,
+  Loader2,
+  SearchX,
+  TrendingUp,
+  Search,
+} from "lucide-react";
 import type { TokenSearchInterface } from "../types";
-import { getTrendingTokens, searchTokens } from "../api/tokenApi";
+import {
+  getMarketData,
+  getTrendingTokens,
+  searchTokens,
+} from "../api/tokenApi";
 import { useDebouncedCallback } from "use-debounce";
+import { useAppDispatch } from "@/store/hooks";
+import { setError, setLoading, setTokens } from "../store/watchlistSlice";
 
 export default function TokenSearchDialog() {
   const [open, setOpen] = useState(false);
@@ -13,8 +27,12 @@ export default function TokenSearchDialog() {
   const [tokenList, setTokenList] = useState<TokenSearchInterface[]>([]);
   const [selectedTokenIds, setSelectedTokenIds] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [trendingTokens, setTrendingTokens] = useState<TokenSearchInterface[]>([]);
+  const [trendingTokens, setTrendingTokens] = useState<TokenSearchInterface[]>(
+    []
+  );
   const [initialLoading, setInitialLoading] = useState(true);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const initTrendingTokens = async () => {
@@ -29,13 +47,13 @@ export default function TokenSearchDialog() {
         setInitialLoading(false);
       }
     };
-    
+
     if (open) {
       initTrendingTokens();
-    }else{
-        setTokenList([])
-        setTrendingTokens([])
-        setSelectedTokenIds([])
+    } else {
+      setTokenList([]);
+      setTrendingTokens([]);
+      setSelectedTokenIds([]);
     }
   }, [open]);
 
@@ -49,13 +67,13 @@ export default function TokenSearchDialog() {
 
   const onTokenSearch = useDebouncedCallback(async (query: string) => {
     setSearchQuery(query);
-    
+
     // If query is empty, show trending tokens immediately (no API call needed)
     if (!query.trim()) {
       setTokenList(trendingTokens);
       return;
     }
-    
+
     setIsSearching(true);
     try {
       const result = await searchTokens(query);
@@ -72,6 +90,30 @@ export default function TokenSearchDialog() {
     const value = e.target.value;
     setSearchQuery(value);
     onTokenSearch(value);
+  };
+
+  const addTokenList = async () => {
+    const coinIds = selectedTokenIds.join(",");
+    dispatch(setLoading(true));
+    setOpen(false);
+    try {
+      let tokens = await getMarketData(coinIds);
+      tokens = tokens.map((token) => ({
+        ...token,
+        holdings: 0,
+        value: 0,
+      }));
+      dispatch(
+        setTokens({
+          tokens,
+        })
+      );
+    } catch (error) {
+      console.error(error);
+      dispatch(setError("Unable to fetch token details. Please try again."));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   return (
@@ -105,7 +147,7 @@ export default function TokenSearchDialog() {
             )}
           </div>
         </div>
-        
+
         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
           {!searchQuery && !isSearching && !initialLoading && (
             <div className="flex-shrink-0 px-4 pt-3 pb-2">
@@ -115,7 +157,7 @@ export default function TokenSearchDialog() {
               </h3>
             </div>
           )}
-          
+
           <div className="flex-1 overflow-y-auto px-2 pb-2">
             {initialLoading || isSearching ? (
               <div className="flex items-center justify-center h-full min-h-[300px]">
@@ -134,15 +176,21 @@ export default function TokenSearchDialog() {
                       <div className="w-16 h-16 rounded-full bg-zinc-800/50 flex items-center justify-center mx-auto mb-3">
                         <SearchX className="w-8 h-8 text-zinc-500" />
                       </div>
-                      <p className="text-sm text-zinc-400 mb-1">No tokens found</p>
-                      <p className="text-xs text-zinc-500">Try searching with different keywords</p>
+                      <p className="text-sm text-zinc-400 mb-1">
+                        No tokens found
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        Try searching with different keywords
+                      </p>
                     </>
                   ) : (
                     <>
                       <div className="w-16 h-16 rounded-full bg-zinc-800/50 flex items-center justify-center mx-auto mb-3">
                         <TrendingUp className="w-8 h-8 text-zinc-500" />
                       </div>
-                      <p className="text-sm text-zinc-400">No trending tokens available</p>
+                      <p className="text-sm text-zinc-400">
+                        No trending tokens available
+                      </p>
                     </>
                   )}
                 </div>
@@ -167,7 +215,9 @@ export default function TokenSearchDialog() {
                       <div className="min-w-0">
                         <div className="text-sm text-text-primary truncate">
                           <span className="font-medium">{token.symbol}</span>
-                          <span className="text-zinc-400 ml-2">{token.name}</span>
+                          <span className="text-zinc-400 ml-2">
+                            {token.name}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -209,13 +259,18 @@ export default function TokenSearchDialog() {
 
         <div className="flex-shrink-0 p-3 border-t border-zinc-700 bg-bg-secondary flex justify-between items-center">
           <span className="text-xs text-zinc-400 pl-1">
-            {selectedTokenIds.length > 0 && `${selectedTokenIds.length} token${selectedTokenIds.length > 1 ? 's' : ''} selected`}
+            {selectedTokenIds.length > 0 &&
+              `${selectedTokenIds.length} token${
+                selectedTokenIds.length > 1 ? "s" : ""
+              } selected`}
           </span>
-          <Button 
+          <Button
             className="bg-accent hover:bg-red-400 text-black text-sm font-medium px-4 py-2 h-auto"
             disabled={selectedTokenIds.length === 0}
+            onClick={() => addTokenList()}
           >
-            Add to Wishlist {selectedTokenIds.length > 0 && `(${selectedTokenIds.length})`}
+            Add to Wishlist{" "}
+            {selectedTokenIds.length > 0 && `(${selectedTokenIds.length})`}
           </Button>
         </div>
       </DialogContent>

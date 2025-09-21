@@ -1,13 +1,41 @@
-import { Ellipsis } from "lucide-react";
+import { Edit, Ellipsis, Trash2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import {
   selectWatchlistLoading,
   selectWatchlistTokens,
 } from "../store/watchlistSelector";
+import { useState } from "react";
+import { useAppDispatch } from "@/store/hooks";
+import { removeToken, updateHoldings } from "../store/watchlistSlice";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function WatchlistTable() {
   const tokens = useSelector(selectWatchlistTokens);
   const isLoading = useSelector(selectWatchlistLoading);
+  const [editingTokenId, setEditingTokenId] = useState("bitcoin");
+  const [holdingValue, setHoldingValue] = useState(0);
+  const dispatch = useAppDispatch();
+
+  const updateHolding = (price: number, id: string) => {
+    const value = parseFloat((price * holdingValue).toFixed(2)) 
+    dispatch(
+      updateHoldings({
+        tokenId: id,
+        holding: holdingValue,
+        value
+      })
+    );
+    setHoldingValue(0);
+    setEditingTokenId("");
+  };
+
+  const removeCrypto = (id: string) => {
+    dispatch(
+        removeToken({
+            tokenId: id
+        })
+    )
+  }
 
   return (
     <div className="rounded-xl border border-zinc-700 overflow-hidden">
@@ -40,7 +68,9 @@ export default function WatchlistTable() {
                   <th className="py-3 px-4 font-light text-sm">
                     Sparkline (7d)
                   </th>
-                  <th className="py-3 px-4 font-light text-sm">Holdings</th>
+                  <th className="py-3 px-4 font-light text-sm  w-[20%]">
+                    Holdings
+                  </th>
                   <th className="py-3 px-4 font-light text-sm">Value</th>
                   <th className="py-3 px-4"></th>
                 </tr>
@@ -83,13 +113,57 @@ export default function WatchlistTable() {
                       </div>
                     </td>
                     <td className="py-2 px-4 text-xs text-text-secondary">
-                      {crypto.holdings}
+                      <div className="flex items-center gap-2">
+                        {editingTokenId !== "" &&
+                        editingTokenId === crypto.id ? (
+                          <div>
+                            <input
+                              type="text"
+                              onChange={(e) =>
+                                setHoldingValue(Number(e.target.value))
+                              }
+                              className="rounded-md outline-0 bg-transparent mr-2 px-3 py-1 text-sm focus:border-1 border-lime-400 shadow-[0_0_0_4px_rgba(163,230,53,0.15)]"
+                            />
+                            <button
+                              type="button"
+                              className="bg-accent text-bg-primary rounded-md text-sm shadow px-3 py-1"
+                              onClick={() => updateHolding(crypto.current_price, crypto.id)}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        ) : (
+                          <div>{crypto.holdings}</div>
+                        )}
+                      </div>
                     </td>
                     <td className="py-2 px-4 text-xs text-text-secondary">
-                      {crypto.value}
+                      ${crypto.value}
                     </td>
-                    <td className="py-2 px-4  text-text-secondary hover:text-text-primary">
-                      <Ellipsis className="w-4 h-4 cursor-pointer" />
+                    <td className="py-2 px-4 text-text-secondary hover:text-text-primary">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="hover:text-text-primary text-text-secondary rounded p-1 transition-colors">
+                            <Ellipsis className="w-4 h-4 cursor-pointer" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48 bg-bg-secondary border-0" align="end">
+                          <DropdownMenuItem
+                            onClick={() => setEditingTokenId(crypto.id)}
+                            className="hover:bg-bg-secondary hover:text-text-primary focus:bg-transparent text-text-secondary cursor-pointer"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            <span>Edit Holdings</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => removeCrypto(crypto.id)}
+                            className="hover:bg-bg-secondary hover:text-red-400 focus:bg-transparent text-red-300 cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            <span>Remove</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}

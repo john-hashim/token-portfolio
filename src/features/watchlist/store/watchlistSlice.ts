@@ -40,6 +40,30 @@ const watchlistSlice = createSlice({
         (token) => !tokenIdsToRemove.has(token.id)
       );
     },
+    updateHoldings: (
+      state,
+      action: PayloadAction<{
+        holding: number;
+        tokenId: string;
+        value: number;
+      }>
+    ) => {
+      state.tokens = state.tokens.map((token) =>
+        token.id === action.payload.tokenId
+          ? { ...token, holdings: action.payload.holding, value: action.payload.value }
+          : token
+      );
+    },
+    removeToken: (
+      state,
+      action: PayloadAction<{
+        tokenId: string;
+      }>
+    ) => {
+      state.tokens = state.tokens.filter((token) =>
+        token.id !== action.payload.tokenId
+      );
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -52,7 +76,7 @@ const watchlistSlice = createSlice({
   },
 });
 
-export const { setTokens, removeTokens, setLoading, setError, resetWatchlist } =
+export const { setTokens, removeTokens, setLoading, setError, resetWatchlist, updateHoldings, removeToken } =
   watchlistSlice.actions;
 
 export const watchlistReducer = watchlistSlice.reducer;

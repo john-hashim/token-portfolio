@@ -1,0 +1,56 @@
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { Token, WatchlistState } from "../types";
+
+const initialState: WatchlistState = {
+  tokens: [],
+  isLoading: false,
+  error: null,
+  lastUpdated: null,
+};
+
+const watchlistSlice = createSlice({
+  name: "watchlist",
+  initialState,
+  reducers: {
+    setTokens: (
+      state,
+      action: PayloadAction<{
+        tokens: Token[];
+      }>
+    ) => {
+      state.tokens = [...state.tokens, ...action.payload.tokens];
+    },
+    removeTokens: (
+      state,
+      action: PayloadAction<{
+        tokens: Token[];
+      }>
+    ) => {
+      const tokenIdsToRemove = new Set(
+        action.payload.tokens.map((token) => token.id)
+      );
+      state.tokens = state.tokens.filter(
+        (token) => !tokenIdsToRemove.has(token.id)
+      );
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
+    resetWatchlist: () => {
+      return initialState;
+    },
+  },
+});
+
+export const {
+    setTokens,
+    removeTokens,
+    setLoading,
+    setError,
+    resetWatchlist
+} = watchlistSlice.actions
+
+export const watchlistReducer = watchlistSlice.reducer;

@@ -232,7 +232,7 @@ export default function TokenSearchDialog() {
                       )}
                       {selectedTokenIds.includes(token.id) ? (
                         <div
-                          className="w-5 h-5 rounded-full bg-accent flex items-center justify-center transition-all"
+                          className="w-5 h-5 rounded-full bg-accent flex items-center justify-center"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleSelect(token.id);
@@ -242,7 +242,7 @@ export default function TokenSearchDialog() {
                         </div>
                       ) : (
                         <div
-                          className="w-5 h-5 rounded-full border border-zinc-600 hover:border-zinc-400 transition-colors"
+                          className="w-5 h-5 rounded-full border border-zinc-600 hover:border-zinc-400"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleSelect(token.id);

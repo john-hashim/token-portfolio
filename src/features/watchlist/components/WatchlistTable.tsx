@@ -18,7 +18,7 @@ import SparklineCell from "./SparklineCell";
 export default function WatchlistTable() {
   const tokens = useSelector(selectWatchlistTokens);
   const isLoading = useSelector(selectWatchlistLoading);
-  const [editingTokenId, setEditingTokenId] = useState('');
+  const [editingTokenId, setEditingTokenId] = useState("");
   const [holdingValue, setHoldingValue] = useState(0);
   const dispatch = useAppDispatch();
 
@@ -77,7 +77,9 @@ export default function WatchlistTable() {
                   <th className="py-3 px-4 font-light text-sm  w-[20%]">
                     Holdings
                   </th>
-                  <th className="py-3 px-4 font-light text-sm w-[10%]">Value</th>
+                  <th className="py-3 px-4 font-light text-sm w-[10%]">
+                    Value
+                  </th>
                   <th className="py-3 px-4"></th>
                 </tr>
               </thead>
@@ -115,24 +117,24 @@ export default function WatchlistTable() {
                     </td>
                     <td className="py-2 px-4">
                       <div className="w-24 h-10 flex items-center">
-                        <SparklineCell  data={crypto.sparkline_in_7d.price}/>
+                        <SparklineCell data={crypto.sparkline_in_7d.price} />
                       </div>
                     </td>
                     <td className="py-2 px-4 text-xs text-text-secondary">
                       <div className="flex items-center gap-2">
                         {editingTokenId !== "" &&
                         editingTokenId === crypto.id ? (
-                          <div>
+                          <div className="flex flex-wrap items-center gap-2 w-full">
                             <input
                               type="text"
                               onChange={(e) =>
                                 setHoldingValue(Number(e.target.value))
                               }
-                              className="rounded-md outline-0 bg-transparent mr-2 px-3 py-1 text-sm focus:border-1 border-lime-400 shadow-[0_0_0_4px_rgba(163,230,53,0.15)]"
+                              className="flex-1 min-w-0 rounded-md outline-0 bg-transparent px-3 py-1 text-sm focus:border-1 border-lime-400 shadow-[0_0_0_4px_rgba(163,230,53,0.15)]"
                             />
                             <button
                               type="button"
-                              className="bg-accent text-bg-primary rounded-md text-sm shadow px-3 py-1"
+                              className="bg-accent text-bg-primary rounded-md text-sm shadow px-3 py-1 whitespace-nowrap"
                               onClick={() =>
                                 updateHolding(crypto.current_price, crypto.id)
                               }

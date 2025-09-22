@@ -10,7 +10,6 @@ export default function CustomConnectButton() {
         account,
         chain,
         openAccountModal,
-        openChainModal,
         openConnectModal,
         authenticationStatus,
         mounted,
@@ -53,6 +52,7 @@ export default function CustomConnectButton() {
                       paddingRight: "10px",
                       paddingTop: "7px",
                       paddingBottom: "7px",
+                      minWidth: "140px",
                     }}
                   >
                     <Wallet size={16} />
@@ -61,95 +61,54 @@ export default function CustomConnectButton() {
                 );
               }
 
-              if (chain.unsupported) {
-                return (
-                  <button
-                    onClick={openChainModal}
-                    type="button"
-                    className="h-full px-4"
-                    style={{
-                      backgroundColor: "#A9E851",
-                      color: "#18181B",
-                      fontSize: "11px",
-                      borderRadius: "20px",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: "500",
-                      paddingLeft: "10px",
-                      paddingRight: "10px",
-                      paddingTop: "7px",
-                      paddingBottom: "7px",
-                    }}
-                  >
-                    Wrong network
-                  </button>
-                );
-              }
-
               return (
                 <div className="h-full flex gap-2">
-                  <button
-                    onClick={openChainModal}
-                    type="button"
-                    className="h-full px-3 flex items-center gap-2"
-                    style={{
-                      backgroundColor: "#A9E851",
-                      color: "#18181B",
-                      fontSize: "11px",
-                      borderRadius: "20px",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: "500",
-                      paddingLeft: "10px",
-                      paddingRight: "10px",
-                      paddingTop: "7px",
-                      paddingBottom: "7px",
-                    }}
-                  >
-                    {chain.hasIcon && (
-                      <div
-                        style={{
-                          width: 16,
-                          height: 16,
-                          borderRadius: "50%",
-                          overflow: "hidden",
-                        }}
-                      >
-                        {chain.iconUrl && (
-                          <img
-                            alt={chain.name ?? "Chain icon"}
-                            src={chain.iconUrl}
-                            style={{ width: 16, height: 16 }}
-                          />
-                        )}
-                      </div>
-                    )}
-                    {chain.name}
-                  </button>
-
-                  <button
-                    onClick={openAccountModal}
-                    type="button"
-                    className="h-full px-4"
-                    style={{
-                      backgroundColor: "#A9E851",
-                      color: "#18181B",
-                      fontSize: "11px",
-                      borderRadius: "20px",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: "500",
-                      paddingLeft: "10px",
-                      paddingRight: "10px",
-                      paddingTop: "7px",
-                      paddingBottom: "7px",
-                    }}
-                  >
-                    {account.displayName}
-                    {account.displayBalance
-                      ? ` (${account.displayBalance})`
-                      : ""}
-                  </button>
+                  {chain.unsupported ? (
+                    <button
+                      onClick={openAccountModal}
+                      type="button"
+                      className="h-full px-4"
+                      style={{
+                        backgroundColor: "#EF4444",
+                        color: "#FFFFFF",
+                        fontSize: "11px",
+                        borderRadius: "20px",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: "500",
+                        paddingLeft: "10px",
+                        paddingRight: "10px",
+                        paddingTop: "7px",
+                        paddingBottom: "7px",
+                        minWidth: "140px",
+                      }}
+                    >
+                      Wrong Network
+                    </button>
+                  ) : (
+                    <button
+                      onClick={openAccountModal}
+                      type="button"
+                      className="h-full px-4 flex items-center justify-center gap-2"
+                      style={{
+                        backgroundColor: "#A9E851",
+                        color: "#18181B",
+                        fontSize: "11px",
+                        borderRadius: "20px",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: "500",
+                        paddingLeft: "10px",
+                        paddingRight: "10px",
+                        paddingTop: "7px",
+                        paddingBottom: "7px",
+                        minWidth: "140px",
+                      }}
+                    >
+                      <Wallet size={16} />
+                      <span>{account.displayName}</span>
+                    </button>
+                  )}
                 </div>
               );
             })()}

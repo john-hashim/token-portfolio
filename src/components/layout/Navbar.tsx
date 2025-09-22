@@ -18,7 +18,6 @@ export default function Navbar() {
 
   useEffect(() => {
     if (isConnected && address && chain) {
-      console.log(balanceData)
       dispatch(
         setWalletInfo({
           address: address,

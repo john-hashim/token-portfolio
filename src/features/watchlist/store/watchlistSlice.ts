@@ -27,6 +27,9 @@ const watchlistSlice = createSlice({
 
       state.tokens = [...state.tokens, ...newTokens];
     },
+    clearTokens: (state) => {
+      state.tokens = [];
+    },
     removeTokens: (
       state,
       action: PayloadAction<{
@@ -50,7 +53,11 @@ const watchlistSlice = createSlice({
     ) => {
       state.tokens = state.tokens.map((token) =>
         token.id === action.payload.tokenId
-          ? { ...token, holdings: action.payload.holding, value: action.payload.value }
+          ? {
+              ...token,
+              holdings: action.payload.holding,
+              value: action.payload.value,
+            }
           : token
       );
     },
@@ -60,8 +67,8 @@ const watchlistSlice = createSlice({
         tokenId: string;
       }>
     ) => {
-      state.tokens = state.tokens.filter((token) =>
-        token.id !== action.payload.tokenId
+      state.tokens = state.tokens.filter(
+        (token) => token.id !== action.payload.tokenId
       );
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -76,7 +83,15 @@ const watchlistSlice = createSlice({
   },
 });
 
-export const { setTokens, removeTokens, setLoading, setError, resetWatchlist, updateHoldings, removeToken } =
-  watchlistSlice.actions;
+export const {
+  setTokens,
+  removeTokens,
+  setLoading,
+  setError,
+  resetWatchlist,
+  updateHoldings,
+  removeToken,
+  clearTokens
+} = watchlistSlice.actions;
 
 export const watchlistReducer = watchlistSlice.reducer;

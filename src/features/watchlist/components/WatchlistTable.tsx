@@ -7,22 +7,28 @@ import {
 import { useState } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import { removeToken, updateHoldings } from "../store/watchlistSlice";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import SparklineCell from "./SparklineCell";
 
 export default function WatchlistTable() {
   const tokens = useSelector(selectWatchlistTokens);
   const isLoading = useSelector(selectWatchlistLoading);
-  const [editingTokenId, setEditingTokenId] = useState("bitcoin");
+  const [editingTokenId, setEditingTokenId] = useState('');
   const [holdingValue, setHoldingValue] = useState(0);
   const dispatch = useAppDispatch();
 
   const updateHolding = (price: number, id: string) => {
-    const value = parseFloat((price * holdingValue).toFixed(2)) 
+    const value = parseFloat((price * holdingValue).toFixed(2));
     dispatch(
       updateHoldings({
         tokenId: id,
         holding: holdingValue,
-        value
+        value,
       })
     );
     setHoldingValue(0);
@@ -31,11 +37,11 @@ export default function WatchlistTable() {
 
   const removeCrypto = (id: string) => {
     dispatch(
-        removeToken({
-            tokenId: id
-        })
-    )
-  }
+      removeToken({
+        tokenId: id,
+      })
+    );
+  };
 
   return (
     <div className="rounded-xl border border-zinc-700 overflow-hidden">
@@ -71,7 +77,7 @@ export default function WatchlistTable() {
                   <th className="py-3 px-4 font-light text-sm  w-[20%]">
                     Holdings
                   </th>
-                  <th className="py-3 px-4 font-light text-sm">Value</th>
+                  <th className="py-3 px-4 font-light text-sm w-[10%]">Value</th>
                   <th className="py-3 px-4"></th>
                 </tr>
               </thead>
@@ -109,7 +115,7 @@ export default function WatchlistTable() {
                     </td>
                     <td className="py-2 px-4">
                       <div className="w-24 h-10 flex items-center">
-                        <div>[Chart]</div>
+                        <SparklineCell  data={crypto.sparkline_in_7d.price}/>
                       </div>
                     </td>
                     <td className="py-2 px-4 text-xs text-text-secondary">
@@ -127,7 +133,9 @@ export default function WatchlistTable() {
                             <button
                               type="button"
                               className="bg-accent text-bg-primary rounded-md text-sm shadow px-3 py-1"
-                              onClick={() => updateHolding(crypto.current_price, crypto.id)}
+                              onClick={() =>
+                                updateHolding(crypto.current_price, crypto.id)
+                              }
                             >
                               Save
                             </button>
@@ -147,7 +155,10 @@ export default function WatchlistTable() {
                             <Ellipsis className="w-4 h-4 cursor-pointer" />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48 bg-bg-secondary border-0" align="end">
+                        <DropdownMenuContent
+                          className="w-48 bg-bg-secondary border-0"
+                          align="end"
+                        >
                           <DropdownMenuItem
                             onClick={() => setEditingTokenId(crypto.id)}
                             className="hover:bg-bg-secondary hover:text-text-primary focus:bg-transparent text-text-secondary cursor-pointer"

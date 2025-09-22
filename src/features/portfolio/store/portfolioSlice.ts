@@ -1,4 +1,4 @@
-import type { Holding, PortfolioState } from "../types";
+import type { PortfolioState } from "../types";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -7,7 +7,6 @@ const initialState: PortfolioState = {
   isWalletConnected: false,
   chain: null,
   address: null,
-  holdings: [],
   isLoading: false,
   error: null,
   lastUpdated: null,
@@ -29,13 +28,6 @@ const portfolioSlice = createSlice({
       state.chain = action.payload.chain;
       state.isWalletConnected = action.payload.isConnected;
     },
-    setHoldings: (state, action: PayloadAction<Holding[]>) => {
-      state.holdings = action.payload;
-      state.totalBalance = action.payload.reduce(
-        (sum, holding) => sum + holding.value,
-        0
-      );
-    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -50,7 +42,6 @@ const portfolioSlice = createSlice({
 
 export const {
     setWalletInfo,
-    setHoldings,
     setLoading,
     setError,
     resetPortfolio

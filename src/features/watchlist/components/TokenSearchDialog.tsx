@@ -23,7 +23,7 @@ import { setError, setLoading, setTokens } from "../store/watchlistSlice";
 
 export default function TokenSearchDialog() {
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [tokenList, setTokenList] = useState<TokenSearchInterface[]>([]);
   const [selectedTokenIds, setSelectedTokenIds] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -54,6 +54,7 @@ export default function TokenSearchDialog() {
       setTokenList([]);
       setTrendingTokens([]);
       setSelectedTokenIds([]);
+      setSearchQuery('')
     }
   }, [open]);
 
@@ -68,7 +69,6 @@ export default function TokenSearchDialog() {
   const onTokenSearch = useDebouncedCallback(async (query: string) => {
     setSearchQuery(query);
 
-    // If query is empty, show trending tokens immediately (no API call needed)
     if (!query.trim()) {
       setTokenList(trendingTokens);
       return;
